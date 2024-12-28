@@ -23,7 +23,7 @@ func decodeGZip(f string) (io.ReadCloser, error) {
 	defer gzr.Close()
 	ext := filepath.Ext(gzr.Header.Name)
 	if decoder, ok := getDecoder(ext); ok {
-		d, err := ioutil.ReadAll(gzr)
+		d, err := io.ReadAll(gzr)
 		if err != nil {
 			return nil, err
 		}

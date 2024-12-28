@@ -2,7 +2,7 @@ package ds
 
 import (
 	"crypto/sha1"
-	"io/ioutil"
+
 	"os"
 	"path/filepath"
 	"sync"
@@ -26,7 +26,7 @@ func (d *Data) Close() error {
 func New() (*Data, error) {
 	var err error
 	data := &Data{}
-	dir, err := ioutil.TempDir("", "roms")
+	dir, err := os.MkdirTemp("", "roms")
 	if err != nil {
 		return data, err
 	}

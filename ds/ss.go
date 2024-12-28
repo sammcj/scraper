@@ -6,7 +6,6 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -68,7 +67,7 @@ func (v HTTPVideoSS) Save(ctx context.Context, p string) error {
 		return ErrImgNotFound
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%v from $s", resp.StatusCode, v.URL)
+		return fmt.Errorf("%v from %s", resp.StatusCode, v.URL)
 	}
 	defer resp.Body.Close()
 	out, err := os.Create(p)
@@ -116,7 +115,7 @@ func (i HTTPImageSS) fetch(ctx context.Context, width, height uint) (rc io.ReadC
 		return nil, fmt.Errorf("%v from %s", resp.StatusCode, ss.SanitizeURL(u))
 	}
 	if resp.Header.Get("Content-Type") != "image/png" {
-		b, _ := ioutil.ReadAll(resp.Body)
+		b, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("%s from %s", string(b), ss.SanitizeURL(u))
 	}
 	return resp.Body, nil
@@ -170,7 +169,7 @@ func (i HTTPImageSS) Save(ctx context.Context, p string, width, height uint) err
 		_, err := io.Copy(out, b)
 		return err
 	default:
-		return fmt.Errorf("Invalid image type.")
+		return fmt.Errorf("invalid image type")
 	}
 	return nil
 }

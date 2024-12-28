@@ -4,7 +4,7 @@ import (
 	"archive/zip"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -128,12 +128,12 @@ func updateMAMEDB(ctx context.Context, version, p string) error {
 	}
 	newVersion := resp.Header.Get("etag")
 	log.Printf("INFO: Upgrading MAME History: %s -> %s.", version, newVersion)
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 	zf := filepath.Join(p, mameZipName)
-	err = ioutil.WriteFile(zf, b, 0664)
+	err = os.WriteFile(zf, b, 0664)
 	if err != nil {
 		return err
 	}
@@ -149,18 +149,18 @@ func updateMAMEDB(ctx context.Context, version, p string) error {
 			return err
 		}
 		defer frc.Close()
-		b, err = ioutil.ReadAll(frc)
+		b, err = io.ReadAll(frc)
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(filepath.Join(dbp, n), b, 0664)
+		err = os.WriteFile(filepath.Join(dbp, n), b, 0664)
 		if err != nil {
 			return err
 		}
 	}
 	log.Print("INFO: Upgrade Complete.")
 	os.Remove(zf)
-	ioutil.WriteFile(filepath.Join(p, mameMetaName), []byte(newVersion), 0664)
+	os.WriteFile(filepath.Join(p, mameMetaName), []byte(newVersion), 0664)
 	return nil
 }
 
@@ -180,7 +180,7 @@ func getMAMEDB(ctx context.Context, p string, u bool) (*leveldb.DB, error) {
 	fp := filepath.Join(p, mameDBName)
 	mp := filepath.Join(p, mameMetaName)
 	if exists(fp) && exists(mp) {
-		b, err := ioutil.ReadFile(mp)
+		b, err := os.ReadFile(mp)
 		if err != nil {
 			return nil, err
 		}

@@ -7,7 +7,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -267,6 +267,9 @@ func SanitizeURL(s string) string {
 
 func User(ctx context.Context, dev DevInfo, user UserInfo) (*UserInfoResp, error) {
 	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = userInfoPath
 	q := url.Values{}
 	q.Set("output", "xml")
@@ -294,7 +297,7 @@ func User(ctx context.Context, dev DevInfo, user UserInfo) (*UserInfoResp, error
 	}
 	defer resp.Body.Close()
 	r := &UserInfoResp{}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -322,6 +325,9 @@ func Threads(ctx context.Context, dev DevInfo, user UserInfo) int {
 // GameInfo is the call to get game info.
 func GameInfo(ctx context.Context, dev DevInfo, user UserInfo, req GameInfoReq) (*GameInfoResp, error) {
 	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = gameInfoPath
 	q := url.Values{}
 	q.Set("output", "json")
@@ -364,7 +370,7 @@ func GameInfo(ctx context.Context, dev DevInfo, user UserInfo, req GameInfoReq) 
 	}
 	defer resp.Body.Close()
 	r := &GameInfoResp{}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

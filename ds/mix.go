@@ -109,7 +109,7 @@ func (i MixImage) Save(ctx context.Context, p string, w, h uint) error {
 	case ".png":
 		return png.Encode(out, img)
 	default:
-		return fmt.Errorf("Invalid image type.")
+		return fmt.Errorf("invalid image type")
 	}
 }
 
@@ -214,9 +214,9 @@ func Draw(ctx context.Context, def *Def, width, height int) (image.Image, error)
 		r := image.Rect(x, y, x+w, y+h)
 		if first {
 			first = false
-			draw.Draw(m, r, img, image.ZP, draw.Src)
+			draw.Draw(m, r, img, image.Point{}, draw.Src)
 		} else {
-			draw.Draw(m, r, img, image.ZP, draw.Over)
+			draw.Draw(m, r, img, image.Point{}, draw.Over)
 		}
 	}
 	if first {

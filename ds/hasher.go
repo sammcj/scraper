@@ -5,7 +5,7 @@ import (
 	"hash"
 	"sync"
 
-	"github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru"
 	rh "github.com/sselph/scraper/rom/hash"
 )
 
@@ -56,8 +56,8 @@ func (h *Hasher) getPathLock(p string) (*sync.Mutex, bool) {
 	hl, ok := h.l[p]
 	if !ok {
 		hl = &sync.Mutex{}
-		hl.Lock()
 		h.l[p] = hl
+		hl.Lock()
 	}
 	return hl, ok
 }
@@ -65,9 +65,10 @@ func (h *Hasher) getPathLock(p string) (*sync.Mutex, bool) {
 func (h *Hasher) deletePathLock(p string) {
 	h.cl.Lock()
 	defer h.cl.Unlock()
-	hl := h.l[p]
-	hl.Unlock()
-	delete(h.l, p)
+	if hl, ok := h.l[p]; ok {
+		hl.Unlock()
+		delete(h.l, p)
+	}
 }
 
 // NewHasher creates a new Hasher that hashes using the provided hash.

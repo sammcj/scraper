@@ -19,19 +19,19 @@ I don't accept donations but I'm raising money for Children's Healthcare of Atla
 
 Or feel free to donate to:
 
-[retropie](https://retropie.org.uk/donate/)  
-[ArcadeItalia](http://adb.arcadeitalia.net/)  
-[ScreenScraper](https://screenscraper.fr/)  
+[retropie](https://retropie.org.uk/donate/)
+[ArcadeItalia](http://adb.arcadeitalia.net/)
+[ScreenScraper](https://screenscraper.fr/)
 [theGamesDB](http://thegamesdb.net/)
 
 Installation
 ------------
 
-Make sure you have go version 1.7 or later installed.
+Make sure you have go version 1.23 or later installed.
 
 ```bash
 $ go version
-go version go1.8 linux/amd64
+go version go1.23.4 linux/amd64
 ```
 
 Fetch and build.

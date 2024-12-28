@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +21,7 @@ func (d *Data) Close() error {
 func New() (*Data, error) {
 	var err error
 	data := &Data{}
-	dir, err := ioutil.TempDir("", "roms")
+	dir, err := os.MkdirTemp("", "roms")
 	if err != nil {
 		return data, err
 	}
@@ -43,7 +42,7 @@ func New() (*Data, error) {
 	}
 	for _, e := range binExts {
 		p := filepath.Join(dir, fmt.Sprintf("test%s", e))
-		err = ioutil.WriteFile(p, binFile, 0777)
+		err = os.WriteFile(p, binFile, 0777)
 		if err != nil {
 			return data, err
 		}
@@ -56,11 +55,11 @@ func New() (*Data, error) {
 	lnxFile = append(lnxFile, binFile...)
 	lnxPath := filepath.Join(dir, "test.lnx")
 	lyxPath := filepath.Join(dir, "test.lyx")
-	err = ioutil.WriteFile(lnxPath, lnxFile, 0777)
+	err = os.WriteFile(lnxPath, lnxFile, 0777)
 	if err != nil {
 		return data, err
 	}
-	err = ioutil.WriteFile(lyxPath, lnxFile, 0777)
+	err = os.WriteFile(lyxPath, lnxFile, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -72,7 +71,7 @@ func New() (*Data, error) {
 	copy(a78File, []byte(" ATARI7800"))
 	a78File = append(a78File, binFile...)
 	a78Path := filepath.Join(dir, "a7800.a78")
-	err = ioutil.WriteFile(a78Path, a78File, 0777)
+	err = os.WriteFile(a78Path, a78File, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -94,17 +93,17 @@ func New() (*Data, error) {
 	v64Path := filepath.Join(dir, "test-v64.v64")
 	n64Path := filepath.Join(dir, "test-n64.v64")
 	z64Path := filepath.Join(dir, "test-z64.v64")
-	err = ioutil.WriteFile(v64Path, v64File, 0777)
+	err = os.WriteFile(v64Path, v64File, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: v64Path, SHA1: "00ba552537f953776b37a05230e9f1c2f6d4c145"})
-	err = ioutil.WriteFile(n64Path, n64File, 0777)
+	err = os.WriteFile(n64Path, n64File, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: n64Path, SHA1: "00ba552537f953776b37a05230e9f1c2f6d4c145"})
-	err = ioutil.WriteFile(z64Path, z64File, 0777)
+	err = os.WriteFile(z64Path, z64File, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -114,17 +113,17 @@ func New() (*Data, error) {
 	v64Path = filepath.Join(dir, "test-bad-v64.v64")
 	n64Path = filepath.Join(dir, "test-bad-n64.v64")
 	z64Path = filepath.Join(dir, "test-bad-z64.v64")
-	err = ioutil.WriteFile(v64Path, []byte{0, 0x80, 0, 0, 0, 0}, 0777)
+	err = os.WriteFile(v64Path, []byte{0, 0x80, 0, 0, 0, 0}, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: v64Path, SHA1: "a5d06af4902696ab97fd92747bc7886c990dfed5"})
-	err = ioutil.WriteFile(n64Path, []byte{0, 0, 0, 0x80, 0, 0}, 0777)
+	err = os.WriteFile(n64Path, []byte{0, 0, 0, 0x80, 0, 0}, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: n64Path, SHA1: "a5d06af4902696ab97fd92747bc7886c990dfed5"})
-	err = ioutil.WriteFile(z64Path, []byte{0x80, 0, 0, 0, 0, 0}, 0777)
+	err = os.WriteFile(z64Path, []byte{0x80, 0, 0, 0, 0, 0}, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -135,12 +134,12 @@ func New() (*Data, error) {
 	snesFile2 := make([]byte, 1536)
 	snesPath1 := filepath.Join(dir, "test.smc")
 	snesPath2 := filepath.Join(dir, "test.sfc")
-	err = ioutil.WriteFile(snesPath1, snesFile1, 0777)
+	err = os.WriteFile(snesPath1, snesFile1, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: snesPath1, SHA1: "60cacbf3d72e1e7834203da608037b1bf83b40e8"})
-	err = ioutil.WriteFile(snesPath2, snesFile2, 0777)
+	err = os.WriteFile(snesPath2, snesFile2, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -166,17 +165,17 @@ func New() (*Data, error) {
 	mdPath := filepath.Join(dir, "nosega.md")
 	smdPath := filepath.Join(dir, "nosega.smd")
 	mgdPath := filepath.Join(dir, "nosega.mgd")
-	err = ioutil.WriteFile(mdPath, mdFile, 0777)
+	err = os.WriteFile(mdPath, mdFile, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: mdPath, SHA1: "526289b04144ebb25afcbeaf0febb1c0cd60bf79"})
-	err = ioutil.WriteFile(smdPath, append(make([]byte, 512), smdFile...), 0777)
+	err = os.WriteFile(smdPath, append(make([]byte, 512), smdFile...), 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: smdPath, SHA1: "526289b04144ebb25afcbeaf0febb1c0cd60bf79"})
-	err = ioutil.WriteFile(mgdPath, mgdFile, 0777)
+	err = os.WriteFile(mgdPath, mgdFile, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -190,17 +189,17 @@ func New() (*Data, error) {
 	mdPath = filepath.Join(dir, "sega-md.md")
 	smdPath = filepath.Join(dir, "sega-smd.md")
 	mgdPath = filepath.Join(dir, "sega-mgd.md")
-	err = ioutil.WriteFile(mdPath, mdFile, 0777)
+	err = os.WriteFile(mdPath, mdFile, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: mdPath, SHA1: "5d2fa3c5c334d6f5c1c0959b040d4452b983d60f"})
-	err = ioutil.WriteFile(smdPath, append(make([]byte, 512), smdFile...), 0777)
+	err = os.WriteFile(smdPath, append(make([]byte, 512), smdFile...), 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: smdPath, SHA1: "5d2fa3c5c334d6f5c1c0959b040d4452b983d60f"})
-	err = ioutil.WriteFile(mgdPath, mgdFile, 0777)
+	err = os.WriteFile(mgdPath, mgdFile, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -239,22 +238,22 @@ func New() (*Data, error) {
 	nesPathv1Trainer := filepath.Join(dir, "nes-v1-trainer.nes")
 	nesPathv2 := filepath.Join(dir, "nes-v2.nes")
 	nesPathNoHeader := filepath.Join(dir, "nes-noheader.nes")
-	err = ioutil.WriteFile(nesPathv1, nesFilev1, 0777)
+	err = os.WriteFile(nesPathv1, nesFilev1, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: nesPathv1, SHA1: "310127efa1522ee9cb559ec502c0f6bb7fde308c"})
-	err = ioutil.WriteFile(nesPathv1Trainer, nesFilev1Trainer, 0777)
+	err = os.WriteFile(nesPathv1Trainer, nesFilev1Trainer, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: nesPathv1Trainer, SHA1: "310127efa1522ee9cb559ec502c0f6bb7fde308c"})
-	err = ioutil.WriteFile(nesPathNoHeader, nesFileNoHeader, 0777)
+	err = os.WriteFile(nesPathNoHeader, nesFileNoHeader, 0777)
 	if err != nil {
 		return data, err
 	}
 	data.Files = append(data.Files, File{Path: nesPathNoHeader, SHA1: "310127efa1522ee9cb559ec502c0f6bb7fde308c"})
-	err = ioutil.WriteFile(nesPathv2, nesFilev2, 0777)
+	err = os.WriteFile(nesPathv2, nesFilev2, 0777)
 	if err != nil {
 		return data, err
 	}
@@ -275,7 +274,7 @@ func New() (*Data, error) {
 			return data, err
 		}
 		var fileData []byte
-		fileData, err = ioutil.ReadFile(f.Path)
+		fileData, err = os.ReadFile(f.Path)
 		if err != nil {
 			return data, err
 		}
@@ -308,7 +307,7 @@ func New() (*Data, error) {
 		zw := gzip.NewWriter(w)
 		zw.Header.Name = filepath.Base(f.Path)
 		var fileData []byte
-		fileData, err = ioutil.ReadFile(f.Path)
+		fileData, err = os.ReadFile(f.Path)
 		if err != nil {
 			return data, err
 		}

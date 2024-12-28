@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -125,26 +124,26 @@ func decodeMD(f io.ReadCloser, s int64, e string) (io.ReadCloser, error) {
 		s -= 512
 	}
 	if s%16384 != 0 {
-		return nil, fmt.Errorf("Invalid MD size")
+		return nil, fmt.Errorf("invalid MD size")
 	}
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	f.Close()
 	if err != nil {
 		return nil, err
 	}
 	if bytes.Equal(b[256:260], []byte("SEGA")) {
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	}
 	if bytes.Equal(b[8320:8328], []byte("SG EEI  ")) || bytes.Equal(b[8320:8328], []byte("SG EADIE")) {
 		for i := 0; int64(i) < (s / int64(16384)); i++ {
 			x := i * 16384
 			copy(b[x:x+16384], deinterleave(b[x:x+16384]))
 		}
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	}
 	if bytes.Equal(b[128:135], []byte("EAGNSS ")) || bytes.Equal(b[128:135], []byte("EAMG RV")) {
 		b = deinterleave(b)
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	}
 	switch e {
 	case ".smd":
@@ -152,12 +151,12 @@ func decodeMD(f io.ReadCloser, s int64, e string) (io.ReadCloser, error) {
 			x := i * 16384
 			copy(b[x:x+16384], deinterleave(b[x:x+16384]))
 		}
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	case ".mgd":
 		b = deinterleave(b)
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	case ".gen":
-		return ioutil.NopCloser(bytes.NewReader(b)), nil
+		return io.NopCloser(bytes.NewReader(b)), nil
 	}
 	return nil, fmt.Errorf("Unknown MD Error")
 }

@@ -8,7 +8,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -441,7 +440,7 @@ func scrape(ctx context.Context, sources []ds.DS, xmlOpts *rom.XMLOpts, gameOpts
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(*outputFile, append([]byte(xml.Header), output...), 0664)
+	err = os.WriteFile(*outputFile, append([]byte(xml.Header), output...), 0664)
 	if err != nil {
 		return err
 	}
@@ -483,7 +482,7 @@ func getSystems() ([]System, error) {
 	if exists(ap) && !exists(p) {
 		p = ap
 	}
-	d, err := ioutil.ReadFile(p)
+	d, err := os.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}

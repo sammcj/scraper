@@ -14,7 +14,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -80,7 +80,7 @@ func GetGame(ctx context.Context, name string) (*Game, error) {
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("got %d status", resp.StatusCode)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

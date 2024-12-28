@@ -76,7 +76,7 @@ func (o *OVGDB) getID(p string) (string, error) {
 	if err == nil {
 		return string(id), nil
 	}
-	if err != nil && err != leveldb.ErrNotFound {
+	if err != leveldb.ErrNotFound {
 		return "", err
 	}
 	b := filepath.Base(p)

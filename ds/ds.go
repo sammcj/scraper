@@ -10,7 +10,6 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -132,7 +131,7 @@ func (v HTTPVideo) Save(ctx context.Context, p string) error {
 		return ErrImgNotFound
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%v from $s", resp.StatusCode, v.URL)
+		return fmt.Errorf("%v from %s", resp.StatusCode, v.URL)
 	}
 	defer resp.Body.Close()
 	out, err := os.Create(p)
@@ -185,7 +184,7 @@ func (i HTTPImage) Save(ctx context.Context, p string, w, h uint) error {
 	case ".png":
 		return png.Encode(out, img)
 	default:
-		return fmt.Errorf("Invalid image type.")
+		return fmt.Errorf("invalid image type")
 	}
 }
 
@@ -209,7 +208,7 @@ func getImage(ctx context.Context, url string, w, h uint) (image.Image, error) {
 		return nil, ErrImgNotFound
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%v from $s", resp.StatusCode, url)
+		return nil, fmt.Errorf("%v from %s", resp.StatusCode, url)
 	}
 	defer resp.Body.Close()
 	img, _, err := image.Decode(resp.Body)
@@ -330,15 +329,15 @@ func updateHash(ctx context.Context, version, p string) error {
 		return err
 	}
 	defer bz.Close()
-	b, err := ioutil.ReadAll(bz)
+	b, err := io.ReadAll(bz)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(filepath.Join(p, hashName), b, 0664)
+	err = os.WriteFile(filepath.Join(p, hashName), b, 0664)
 	if err != nil {
 		return err
 	}
-	ioutil.WriteFile(filepath.Join(p, hashMeta), []byte(newVersion), 0664)
+	os.WriteFile(filepath.Join(p, hashMeta), []byte(newVersion), 0664)
 	return nil
 }
 
@@ -364,7 +363,7 @@ func CachedHashMap(ctx context.Context, p string, u bool) (*HashMap, error) {
 	mp := filepath.Join(p, hashMeta)
 	var version string
 	if exists(fp) && exists(mp) {
-		b, err := ioutil.ReadFile(mp)
+		b, err := os.ReadFile(mp)
 		if err != nil {
 			return nil, err
 		}

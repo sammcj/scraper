@@ -5,17 +5,19 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/sselph/scraper/ds"
-	"github.com/syndtr/goleveldb/leveldb"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/sselph/scraper/ds"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 const (
@@ -176,12 +178,12 @@ func updateDB(version, p string) error {
 			return err
 		}
 		defer resp.Body.Close()
-		b, err := ioutil.ReadAll(resp.Body)
+		b, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
 		zf := filepath.Join(p, zipName)
-		err = ioutil.WriteFile(zf, b, 0664)
+		err = os.WriteFile(zf, b, 0664)
 		if err != nil {
 			return err
 		}
@@ -199,14 +201,14 @@ func updateDB(version, p string) error {
 				return err
 			}
 			defer frc.Close()
-			b, err = ioutil.ReadAll(frc)
+			b, err = io.ReadAll(frc)
 			if err != nil {
 				return err
 			}
-			ioutil.WriteFile(filepath.Join(p, metaName), []byte(r.TagName), 0664)
+			os.WriteFile(filepath.Join(p, metaName), []byte(r.TagName), 0664)
 			os.Remove(zf)
 			log.Print("INFO: Upgrade Complete.")
-			return ioutil.WriteFile(filepath.Join(p, fileName), b, 0664)
+			return os.WriteFile(filepath.Join(p, fileName), b, 0664)
 		}
 	}
 	return fmt.Errorf("no openvgdb found")
@@ -243,7 +245,7 @@ func getDB() (*sql.DB, error) {
 	fp := path.Join(p, fileName)
 	mp := path.Join(p, metaName)
 	if exists(fp) && exists(mp) {
-		b, err := ioutil.ReadFile(mp)
+		b, err := os.ReadFile(mp)
 		if err != nil {
 			return nil, err
 		}
